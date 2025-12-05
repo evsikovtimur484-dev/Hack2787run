@@ -1,0 +1,62 @@
+-- КОНТЕКСТ: LocalScript внутри StarterPlayerScripts
+
+local player = game.Players.LocalPlayer
+local PlayerGui = player:WaitForChild("PlayerGui")
+local toggle_active = false
+local initial_speed = 16 -- Стандартная скорость ходьбы в Roblox
+
+-- --- UI SETUP (Кнопка) ---
+
+local Menu = Instance.new("ScreenGui")
+Menu.Name = "AbilityMenu"
+Menu.Parent = PlayerGui
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "SpeedToggle"
+ToggleButton.Size = UDim2.new(0, 150, 0, 40)
+ToggleButton.Position = UDim2.new(0.01, 0, 0.9, 0) -- В нижнем левом углу
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.TextSize = 16
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Parent = Menu
+
+-- --- 1. Логика Способности ---
+
+local function toggleSuperSpeed(state)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    
+    if not humanoid then return end
+
+    if state then
+        -- ВКЛЮЧЕНИЕ: Устанавливаем высокую скорость
+        humanoid.WalkSpeed = 50 
+        print(">> Способность: Супер-Скорость ВКЛЮЧЕНА")
+    else
+        -- ВЫКЛЮЧЕНИЕ: Возвращаем стандартную скорость
+        humanoid.WalkSpeed = initial_speed 
+        print(">> Способность: Супер-Скорость ВЫКЛЮЧЕНА")
+    end
+end
+
+-- --- 2. Логика Кнопки ---
+
+local function updateButtonState()
+    if toggle_active then
+        ToggleButton.Text = "СКОРОСТЬ: ВКЛ."
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0) -- Зеленый
+    else
+        ToggleButton.Text = "СКОРОСТЬ: ВЫКЛ."
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0) -- Красный
+    end
+end
+
+ToggleButton.MouseButton1Click:Connect(function()
+    toggle_active = not toggle_active
+    
+    toggleSuperSpeed(toggle_active)
+    updateButtonState()
+end)
+
+-- Инициализация
+updateButtonState()
